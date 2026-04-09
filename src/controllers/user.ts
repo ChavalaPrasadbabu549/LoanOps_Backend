@@ -13,7 +13,7 @@ const generateToken = (id: string) => {
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { name, email, number, password } = req.body;
-        console.log(req.body);
+        // console.log(req.body);
         const image = (req as any).file ? (req as any).file.path : "";
 
         if (!name || !email || !number || !password) {
