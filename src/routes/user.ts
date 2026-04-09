@@ -10,7 +10,7 @@ import { upload } from '../middleware/upload';
 const router = express.Router();
 
 router.post('/register', upload.single('profile'), registerUser);
-router.post('/login', loginUser);
+router.post('/login', upload.none() as express.RequestHandler, loginUser as express.RequestHandler);
 router.put('/update', protect as express.RequestHandler, upload.single('profile') as express.RequestHandler, updateProfile as express.RequestHandler);
 
 export default router;

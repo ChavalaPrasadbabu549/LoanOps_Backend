@@ -29,6 +29,7 @@ app.use((0, cors_1.default)({
     credentials: true
 }));
 app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use("/user", user_1.default);
 app.use("/applications", application_1.default);
 const server = (0, http_1.createServer)(app);
