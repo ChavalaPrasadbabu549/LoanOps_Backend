@@ -13,7 +13,6 @@ const generateToken = (id: string) => {
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { name, email, number, password } = req.body;
-        // console.log(req.body);
         const image = (req as any).file ? (req as any).file.path : "";
 
         if (!name || !email || !number || !password) {
@@ -57,8 +56,6 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
-        console.log(req.body);
-
         if (!email || !password) {
             res.status(400).json({ success: false, message: 'Email and password are required' });
             return;
@@ -121,6 +118,30 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response): P
         }
     } catch (error: any) {
         console.error('Error in updateProfile:', error);
+        res.status(500).json({ success: false, message: error.message || 'Server Error' });
+    }
+};
+
+export const getuserdetails = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+        if (!req.user) {
+            res.status(401).json({ success: false, message: 'User not authenticated' });
+            return;
+        }
+
+        const user = await User.findById(req.user._id);
+
+        if (user) {
+            res.status(200).json({
+                success: true,
+                message: 'User details fetched successfully',
+                data: user
+            });
+        } else {
+            res.status(404).json({ success: false, message: 'User not found' });
+        }
+    } catch (error: any) {
+        console.error('Error in getuserdetails:', error);
         res.status(500).json({ success: false, message: error.message || 'Server Error' });
     }
 };

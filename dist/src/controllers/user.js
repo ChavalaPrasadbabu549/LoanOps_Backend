@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProfile = exports.loginUser = exports.registerUser = void 0;
+exports.getuserdetails = exports.updateProfile = exports.loginUser = exports.registerUser = void 0;
 const user_1 = __importDefault(require("../models/user"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
@@ -15,7 +15,6 @@ const generateToken = (id) => {
 const registerUser = async (req, res) => {
     try {
         const { name, email, number, password } = req.body;
-        // console.log(req.body);
         const image = req.file ? req.file.path : "";
         if (!name || !email || !number || !password) {
             res.status(400).json({ success: false, message: 'All fields including password are required' });
@@ -55,7 +54,6 @@ exports.registerUser = registerUser;
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(req.body);
         if (!email || !password) {
             res.status(400).json({ success: false, message: 'Email and password are required' });
             return;
@@ -114,3 +112,27 @@ const updateProfile = async (req, res) => {
     }
 };
 exports.updateProfile = updateProfile;
+const getuserdetails = async (req, res) => {
+    try {
+        if (!req.user) {
+            res.status(401).json({ success: false, message: 'User not authenticated' });
+            return;
+        }
+        const user = await user_1.default.findById(req.user._id);
+        if (user) {
+            res.status(200).json({
+                success: true,
+                message: 'User details fetched successfully',
+                data: user
+            });
+        }
+        else {
+            res.status(404).json({ success: false, message: 'User not found' });
+        }
+    }
+    catch (error) {
+        console.error('Error in getuserdetails:', error);
+        res.status(500).json({ success: false, message: error.message || 'Server Error' });
+    }
+};
+exports.getuserdetails = getuserdetails;
