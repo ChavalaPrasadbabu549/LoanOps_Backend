@@ -13,9 +13,9 @@ const fileUploads = upload_1.upload.fields([
     { name: 'aadhaarImage', maxCount: 1 },
     { name: 'documents', maxCount: 10 }
 ]);
-router.route('/create')
-    .post(auth_1.protect, fileUploads, application_1.createApplication)
-    .get(auth_1.protect, application_1.getApplications);
+router.post('/create', auth_1.protect, fileUploads, application_1.createApplication);
+router.get('/all', auth_1.protect, application_1.getApplications);
+router.get('/my-applications', auth_1.protect, application_1.getUserApplications);
 router.route('/update/:id')
     .get(auth_1.protect, application_1.getApplicationById)
     .put(auth_1.protect, fileUploads, application_1.updateApplication);

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateApplicationStatus = exports.updateApplication = exports.getApplicationById = exports.getApplications = exports.createApplication = void 0;
+exports.getUserApplications = exports.updateApplicationStatus = exports.updateApplication = exports.getApplicationById = exports.getApplications = exports.createApplication = void 0;
 const application_1 = __importDefault(require("../models/application"));
 const getUploadedFileUrl = (files, fieldName) => {
     if (files && files[fieldName] && files[fieldName].length > 0) {
@@ -20,12 +20,6 @@ const getUploadedFilesUrls = (files, fieldName) => {
 const createApplication = async (req, res) => {
     try {
         const { applicantName, mobileNumber, panNumber, aadhaarNumber } = req.body;
-        let missingFields = [];
-        if (req.body.missingFields) {
-            missingFields = Array.isArray(req.body.missingFields)
-                ? req.body.missingFields
-                : [req.body.missingFields];
-        }
         let panImage = "";
         let aadhaarImage = "";
         let documents = [];
@@ -46,8 +40,7 @@ const createApplication = async (req, res) => {
             aadhaarImage,
             documents,
             applicationNumber,
-            status: "Pending",
-            missingFields
+            status: "Pending"
         });
         res.status(201).json({ success: true, data: application });
     }
@@ -92,11 +85,6 @@ const updateApplication = async (req, res) => {
         application.mobileNumber = mobileNumber || application.mobileNumber;
         application.panNumber = panNumber || application.panNumber;
         application.aadhaarNumber = aadhaarNumber || application.aadhaarNumber;
-        if (req.body.missingFields) {
-            application.missingFields = Array.isArray(req.body.missingFields)
-                ? req.body.missingFields
-                : [req.body.missingFields];
-        }
         if (req.files) {
             const panImage = getUploadedFileUrl(req.files, 'panImage');
             const aadhaarImage = getUploadedFileUrl(req.files, 'aadhaarImage');
@@ -142,3 +130,17 @@ const updateApplicationStatus = async (req, res) => {
     }
 };
 exports.updateApplicationStatus = updateApplicationStatus;
+const getUserApplications = async (req, res) => {
+    try {
+        if (!req.user) {
+            res.status(401).json({ success: false, message: 'User not authenticated' });
+            return;
+        }
+        const applications = await application_1.default.find({ userId: req.user._id }).sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: applications });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+exports.getUserApplications = getUserApplications;

@@ -6,7 +6,8 @@ import {
     getApplications,
     getApplicationById,
     updateApplication,
-    updateApplicationStatus
+    updateApplicationStatus,
+    getUserApplications
 } from '../controllers/application';
 
 const router = express.Router();
@@ -16,9 +17,10 @@ const fileUploads = upload.fields([
     { name: 'documents', maxCount: 10 }
 ]);
 
-router.route('/create')
-    .post(protect as express.RequestHandler, fileUploads as express.RequestHandler, createApplication as express.RequestHandler)
-    .get(protect as express.RequestHandler, getApplications as express.RequestHandler);
+router.post('/create', protect as express.RequestHandler, fileUploads as express.RequestHandler, createApplication as express.RequestHandler);
+
+router.get('/all', protect as express.RequestHandler, getApplications as express.RequestHandler);
+router.get('/my-applications', protect as express.RequestHandler, getUserApplications as express.RequestHandler);
 
 router.route('/update/:id')
     .get(protect as express.RequestHandler, getApplicationById as express.RequestHandler)

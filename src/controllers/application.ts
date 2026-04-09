@@ -17,17 +17,11 @@ const getUploadedFilesUrls = (files: any, fieldName: string): string[] => {
     return [];
 };
 
-
 export const createApplication = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
         const { applicantName, mobileNumber, panNumber, aadhaarNumber } = req.body;
 
-        let missingFields: string[] = [];
-        if (req.body.missingFields) {
-            missingFields = Array.isArray(req.body.missingFields)
-                ? req.body.missingFields
-                : [req.body.missingFields];
-        }
+
 
         let panImage = "";
         let aadhaarImage = "";
@@ -52,8 +46,7 @@ export const createApplication = async (req: AuthenticatedRequest, res: Response
             aadhaarImage,
             documents,
             applicationNumber,
-            status: "Pending",
-            missingFields
+            status: "Pending"
         });
 
         res.status(201).json({ success: true, data: application });
@@ -99,11 +92,6 @@ export const updateApplication = async (req: AuthenticatedRequest, res: Response
         application.panNumber = panNumber || application.panNumber;
         application.aadhaarNumber = aadhaarNumber || application.aadhaarNumber;
 
-        if (req.body.missingFields) {
-            application.missingFields = Array.isArray(req.body.missingFields)
-                ? req.body.missingFields
-                : [req.body.missingFields];
-        }
 
         if ((req as any).files) {
             const panImage = getUploadedFileUrl((req as any).files, 'panImage');
@@ -146,6 +134,20 @@ export const updateApplicationStatus = async (req: AuthenticatedRequest, res: Re
 
         await application.save();
         res.status(200).json({ success: true, data: application });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getUserApplications = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+        if (!req.user) {
+            res.status(401).json({ success: false, message: 'User not authenticated' });
+            return;
+        }
+
+        const applications = await Application.find({ userId: req.user._id }).sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: applications });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });
     }
