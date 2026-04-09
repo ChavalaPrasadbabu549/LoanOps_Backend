@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import User from '../models/user';
-import { generateOTP, setOtp, verifyOtp } from '../utils/otp';
-import { Sendotpmail } from '../utils/email';
 import { AuthenticatedRequest } from '../utils/@type';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 const generateToken = (id: string) => {
     return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback-secret', {
@@ -11,14 +10,13 @@ const generateToken = (id: string) => {
     });
 };
 
-
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { name, email, number } = req.body;
+        const { name, email, number, password } = req.body;
         const image = (req as any).file ? (req as any).file.path : "";
 
-        if (!name || !email || !number) {
-            res.status(400).json({ success: false, message: 'All fields are required' });
+        if (!name || !email || !number || !password) {
+            res.status(400).json({ success: false, message: 'All fields including password are required' });
             return;
         }
 
@@ -29,9 +27,13 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
+        const salt = await bcrypt.genSalt(8);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         const user = await User.create({
             name,
             email,
+            password: hashedPassword,
             number,
             profile: image,
         });
@@ -51,55 +53,30 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-export const requestOTP = async (req: Request, res: Response): Promise<void> => {
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { email } = req.body;
+        const { email, password } = req.body;
+        console.log(email, password);
 
-        if (!email) {
-            res.status(400).json({ success: false, message: 'Email is required' });
+        if (!email || !password) {
+            res.status(400).json({ success: false, message: 'Email and password are required' });
             return;
         }
 
         const user = await User.findOne({ email });
 
-        if (!user) {
-            res.status(404).json({ success: false, message: 'User not found, please register first' });
+        if (!user || !user.password) {
+            res.status(401).json({ success: false, message: 'Invalid credentials' });
             return;
         }
 
-        const otp = generateOTP(6);
+        const isMatch = await bcrypt.compare(password, user.password);
 
-        setOtp(email, otp, user);
-
-        await Sendotpmail(user.email, otp);
-
-        res.status(200).json({
-            success: true,
-            message: 'OTP sent to email successfully',
-        });
-    } catch (error: any) {
-        console.error('Error in requestOTP:', error);
-        res.status(500).json({ success: false, message: error.message || 'Server Error' });
-    }
-};
-
-export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { email, otp } = req.body;
-
-        if (!email || !otp) {
-            res.status(400).json({ success: false, message: 'Email and OTP are required' });
+        if (!isMatch) {
+            res.status(401).json({ success: false, message: 'Invalid credentials' });
             return;
         }
 
-        const verifiedData = verifyOtp(email, otp);
-
-        if (!verifiedData) {
-            res.status(401).json({ success: false, message: 'Invalid OTP' });
-            return;
-        }
-
-        const user = verifiedData;
         const token = generateToken(user.id);
 
         res.status(200).json({
@@ -109,7 +86,7 @@ export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
             data: user
         });
     } catch (error: any) {
-        console.error('Error in verifyOTP:', error);
+        console.error('Error in login:', error);
         res.status(500).json({ success: false, message: error.message || 'Server Error' });
     }
 };
