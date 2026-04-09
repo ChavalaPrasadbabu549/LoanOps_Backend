@@ -16,6 +16,7 @@ const allowedOrigins = [
     "http://localhost:5173",
     "https://secureportalfrontend.netlify.app",
     "https://secureportalfrontend.netlify.app/",
+    "https://loanops-backend.onrender.com",
 ];
 app.use(cors({
     origin: function (origin, callback) {
