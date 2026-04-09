@@ -3,11 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProfile = exports.verifyOTP = exports.requestOTP = exports.registerUser = void 0;
+exports.updateProfile = exports.loginUser = exports.registerUser = void 0;
 const user_1 = __importDefault(require("../models/user"));
-const otp_1 = require("../utils/otp");
-const email_1 = require("../utils/email");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const generateToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET || 'fallback-secret', {
         expiresIn: '7d',
@@ -15,10 +14,10 @@ const generateToken = (id) => {
 };
 const registerUser = async (req, res) => {
     try {
-        const { name, email, number } = req.body;
+        const { name, email, number, password } = req.body;
         const image = req.file ? req.file.path : "";
-        if (!name || !email || !number) {
-            res.status(400).json({ success: false, message: 'All fields are required' });
+        if (!name || !email || !number || !password) {
+            res.status(400).json({ success: false, message: 'All fields including password are required' });
             return;
         }
         const userExists = await user_1.default.findOne({ email });
@@ -26,9 +25,12 @@ const registerUser = async (req, res) => {
             res.status(400).json({ success: false, message: 'User already exists' });
             return;
         }
+        const salt = await bcryptjs_1.default.genSalt(8);
+        const hashedPassword = await bcryptjs_1.default.hash(password, salt);
         const user = await user_1.default.create({
             name,
             email,
+            password: hashedPassword,
             number,
             profile: image,
         });
@@ -49,45 +51,24 @@ const registerUser = async (req, res) => {
     }
 };
 exports.registerUser = registerUser;
-const requestOTP = async (req, res) => {
+const loginUser = async (req, res) => {
     try {
-        const { email } = req.body;
-        if (!email) {
-            res.status(400).json({ success: false, message: 'Email is required' });
+        const { email, password } = req.body;
+        console.log(email, password);
+        if (!email || !password) {
+            res.status(400).json({ success: false, message: 'Email and password are required' });
             return;
         }
         const user = await user_1.default.findOne({ email });
-        if (!user) {
-            res.status(404).json({ success: false, message: 'User not found, please register first' });
+        if (!user || !user.password) {
+            res.status(401).json({ success: false, message: 'Invalid credentials' });
             return;
         }
-        const otp = (0, otp_1.generateOTP)(6);
-        (0, otp_1.setOtp)(email, otp, user);
-        await (0, email_1.Sendotpmail)(user.email, otp);
-        res.status(200).json({
-            success: true,
-            message: 'OTP sent to email successfully',
-        });
-    }
-    catch (error) {
-        console.error('Error in requestOTP:', error);
-        res.status(500).json({ success: false, message: error.message || 'Server Error' });
-    }
-};
-exports.requestOTP = requestOTP;
-const verifyOTP = async (req, res) => {
-    try {
-        const { email, otp } = req.body;
-        if (!email || !otp) {
-            res.status(400).json({ success: false, message: 'Email and OTP are required' });
+        const isMatch = await bcryptjs_1.default.compare(password, user.password);
+        if (!isMatch) {
+            res.status(401).json({ success: false, message: 'Invalid credentials' });
             return;
         }
-        const verifiedData = (0, otp_1.verifyOtp)(email, otp);
-        if (!verifiedData) {
-            res.status(401).json({ success: false, message: 'Invalid OTP' });
-            return;
-        }
-        const user = verifiedData;
         const token = generateToken(user.id);
         res.status(200).json({
             success: true,
@@ -97,11 +78,11 @@ const verifyOTP = async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Error in verifyOTP:', error);
+        console.error('Error in login:', error);
         res.status(500).json({ success: false, message: error.message || 'Server Error' });
     }
 };
-exports.verifyOTP = verifyOTP;
+exports.loginUser = loginUser;
 const updateProfile = async (req, res) => {
     try {
         const { name, number, profile } = req.body;

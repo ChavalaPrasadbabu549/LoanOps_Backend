@@ -9,7 +9,6 @@ const auth_1 = require("../middleware/auth");
 const upload_1 = require("../middleware/upload");
 const router = express_1.default.Router();
 router.post('/register', upload_1.upload.single('profile'), user_1.registerUser);
-router.post('/login', user_1.requestOTP);
-router.post('/verify-otp', user_1.verifyOTP);
+router.post('/login', user_1.loginUser);
 router.put('/update', auth_1.protect, upload_1.upload.single('profile'), user_1.updateProfile);
 exports.default = router;

@@ -15,7 +15,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://secureportalfrontend.netlify.app/",
+    "https://secureportalfrontend.netlify.app",
 ];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {
@@ -33,4 +33,5 @@ app.use("/user", user_1.default);
 app.use("/applications", application_1.default);
 const server = (0, http_1.createServer)(app);
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const DOMAIN = process.env.DOMAIN || `http://localhost:${PORT}`;
+server.listen(PORT, () => console.log(`Server running actively at: ${DOMAIN}`));

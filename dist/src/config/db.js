@@ -8,7 +8,6 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const dns_1 = __importDefault(require("dns"));
 async function connectDB() {
     try {
-        // Attempt to bypass local ISP/network SRV blocking by using Google DNS
         dns_1.default.setServers(['8.8.8.8', '8.8.4.4']);
         await mongoose_1.default.connect(process.env.MONGO_URL);
         console.log("MongoDB Connected!");
