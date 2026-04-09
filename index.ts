@@ -13,7 +13,9 @@ connectDB();
 const app = express();
 const allowedOrigins = [
     "http://localhost:5173/",
+    "http://localhost:5173",
     "https://secureportalfrontend.netlify.app",
+    "https://secureportalfrontend.netlify.app/",
 ];
 app.use(cors({
     origin: function (origin, callback) {

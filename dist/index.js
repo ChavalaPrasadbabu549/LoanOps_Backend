@@ -15,7 +15,9 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const allowedOrigins = [
     "http://localhost:5173/",
+    "http://localhost:5173",
     "https://secureportalfrontend.netlify.app",
+    "https://secureportalfrontend.netlify.app/",
 ];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {
