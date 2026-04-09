@@ -77,6 +77,8 @@ export const getApplicationById = async (req: AuthenticatedRequest, res: Respons
     }
 };
 
+
+
 export const updateApplication = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
         const { applicantName, mobileNumber, panNumber, aadhaarNumber } = req.body;
