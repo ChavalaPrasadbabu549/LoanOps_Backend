@@ -7,6 +7,8 @@ import userRoutes from "./src/routes/user";
 import applicationRoutes from "./src/routes/application";
 
 
+
+
 dotenv.config();
 connectDB();
 
@@ -16,7 +18,6 @@ const allowedOrigins = [
     "http://localhost:5173",
     "https://secureportalfrontend.netlify.app",
     "https://secureportalfrontend.netlify.app/",
-    "https://loanops-backend.onrender.com",
 ];
 app.use(cors({
     origin: function (origin, callback) {

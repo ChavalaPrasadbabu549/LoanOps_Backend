@@ -10,7 +10,6 @@ import {
 } from '../controllers/application';
 
 const router = express.Router();
-
 const fileUploads = upload.fields([
     { name: 'panImage', maxCount: 1 },
     { name: 'aadhaarImage', maxCount: 1 },
