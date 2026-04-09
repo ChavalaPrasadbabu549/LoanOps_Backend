@@ -13,6 +13,7 @@ const generateToken = (id: string) => {
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { name, email, number, password } = req.body;
+        console.log(req.body);
         const image = (req as any).file ? (req as any).file.path : "";
 
         if (!name || !email || !number || !password) {
@@ -56,7 +57,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
-        console.log(email, password);
+        console.log(req.body);
 
         if (!email || !password) {
             res.status(400).json({ success: false, message: 'Email and password are required' });

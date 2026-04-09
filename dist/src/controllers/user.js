@@ -15,6 +15,7 @@ const generateToken = (id) => {
 const registerUser = async (req, res) => {
     try {
         const { name, email, number, password } = req.body;
+        console.log(req.body);
         const image = req.file ? req.file.path : "";
         if (!name || !email || !number || !password) {
             res.status(400).json({ success: false, message: 'All fields including password are required' });
@@ -54,7 +55,7 @@ exports.registerUser = registerUser;
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(email, password);
+        console.log(req.body);
         if (!email || !password) {
             res.status(400).json({ success: false, message: 'Email and password are required' });
             return;
