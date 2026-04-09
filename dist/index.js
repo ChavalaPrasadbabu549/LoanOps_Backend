@@ -17,6 +17,7 @@ const allowedOrigins = [
     "http://localhost:5173/",
     "http://localhost:5173",
     "https://applicationreviewsystem.netlify.app/",
+    "https://applicationreviewsystem.netlify.app",
 ];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {
