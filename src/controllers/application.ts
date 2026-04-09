@@ -21,8 +21,6 @@ export const createApplication = async (req: AuthenticatedRequest, res: Response
     try {
         const { applicantName, mobileNumber, panNumber, aadhaarNumber } = req.body;
 
-
-
         let panImage = "";
         let aadhaarImage = "";
         let documents: string[] = [];
