@@ -13,7 +13,7 @@ connectDB();
 const app = express();
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://secureportalfrontend.netlify.app/",
+    "https://secureportalfrontend.netlify.app",
 ];
 app.use(cors({
     origin: function (origin, callback) {
@@ -35,4 +35,6 @@ app.use("/applications", applicationRoutes);
 const server = createServer(app);
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const DOMAIN = process.env.DOMAIN || `http://localhost:${PORT}`;
+
+server.listen(PORT, () => console.log(`Server running actively at: ${DOMAIN}`));
