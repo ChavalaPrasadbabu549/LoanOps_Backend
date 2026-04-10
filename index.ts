@@ -42,14 +42,14 @@ const PORT = process.env.PORT || 5000;
 const DOMAIN = process.env.DOMAIN || `http://localhost:${PORT}`;
 
 // Global Error Handler to catch middleware (like Multer/Cloudinary) errors
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error("Global Error Caught:");
-    console.dir(err, { depth: null }); // safely prints [object Object] contents
-    res.status(500).json({
-        success: false,
-        message: err.message || "Cloudinary / Middleware Error (Check your .env keys!)",
-        error: err
-    });
-});
+// app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+//     console.error("Global Error Caught:");
+//     console.dir(err, { depth: null }); // safely prints [object Object] contents
+//     res.status(500).json({
+//         success: false,
+//         message: err.message || "Cloudinary / Middleware Error (Check your .env keys!)",
+//         error: err
+//     });
+// });
 
 server.listen(PORT, () => console.log(`Server running actively at: ${DOMAIN}`));

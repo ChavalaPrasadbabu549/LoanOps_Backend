@@ -21,11 +21,16 @@ export interface IApplication extends Document {
   panImage: string;
   aadhaarNumber: string;
   aadhaarImage: string;
+  voterId: string;
+  bankStatement: string;
+  houseTax: string;
   documents: string[];
   applicationNumber: string;
   status: 'Pending' | 'Approved' | 'Rejected';
   rejectionReason?: string;
-  missingFields: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  remarks?: string;
+  loanAmount?: number;
+  loanType?: string;
+  purpose?: string;
+  address?: string;
 }

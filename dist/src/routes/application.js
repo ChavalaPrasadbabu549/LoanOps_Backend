@@ -11,11 +11,15 @@ const router = express_1.default.Router();
 const fileUploads = upload_1.upload.fields([
     { name: 'panImage', maxCount: 1 },
     { name: 'aadhaarImage', maxCount: 1 },
-    { name: 'documents', maxCount: 10 }
+    { name: 'documents', maxCount: 10 },
+    { name: 'voterId', maxCount: 1 },
+    { name: 'bankStatement', maxCount: 1 },
+    { name: 'houseTax', maxCount: 1 },
 ]);
 router.post('/create', auth_1.protect, fileUploads, application_1.createApplication);
 router.get('/all', auth_1.protect, application_1.getApplications);
 router.get('/my-applications', auth_1.protect, application_1.getUserApplications);
+router.get('/stats', auth_1.protect, application_1.getDashboardStats);
 router.route('/update/:id')
     .get(auth_1.protect, application_1.getApplicationById)
     .put(auth_1.protect, fileUploads, application_1.updateApplication);

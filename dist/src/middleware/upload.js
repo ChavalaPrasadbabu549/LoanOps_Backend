@@ -12,7 +12,8 @@ const storage = new multer_storage_cloudinary_1.CloudinaryStorage({
     cloudinary: cloudinary_1.default,
     params: {
         folder: 'loanops_profiles',
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp']
+        resource_type: 'auto',
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'pdf']
     },
 });
 // Create Multer upload middleware

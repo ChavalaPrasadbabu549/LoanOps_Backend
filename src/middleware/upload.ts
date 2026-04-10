@@ -7,7 +7,8 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'loanops_profiles',
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp']
+        resource_type: 'auto',
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'pdf']
     } as any,
 });
 
